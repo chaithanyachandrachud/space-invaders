@@ -56,6 +56,13 @@ h1 {
     box-shadow: 0 0 8px rgba(255, 145, 0, 0.7); /* Glowing orange effect */
 }
 
+/* Boss Enemy */
+.boss {
+    background-color: #e91e63; /* Pinkish red for boss */
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(233, 30, 99, 0.7); /* Glowing pinkish effect */
+}
+
 /* Bullet Style */
 .bullet {
     background-color: #ffeb3b; /* Bright yellow for bullets */
@@ -76,5 +83,3 @@ h1 {
     color: #00e5ff; /* Cyan color for score */
     margin-top: 20px;
 }
-
-

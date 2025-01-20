@@ -13,13 +13,20 @@ for (let i = 0; i < 225; i++) {
 let shooterIndex = 217; // Start position (bottom-center of the grid)
 cells[shooterIndex].classList.add('shooter');
 
-// Invader Setup (20 invaders at random positions)
-const invaderIndices = [
+// Enemy Setup
+let invaderIndices = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
     16, 17, 18, 19, 20,
     31, 32, 33, 34, 35,
 ];
-invaderIndices.forEach(index => cells[index].classList.add('invader'));
+
+// Boss Setup
+let bossIndex = -1; // Boss is initially not active
+
+// Level Setup
+let level = 1;
+let invaderSpeed = 1000; // Speed of invader movement in ms
+let invaderInterval;
 
 // Move Shooter with Arrow Keys
 document.addEventListener('keydown', (e) => {
@@ -48,10 +55,21 @@ function moveInvaders() {
     }
 
     invaderIndices.forEach(index => cells[index].classList.add('invader')); // Add invaders at new positions
+
+    // Check for Boss Appearance
+    if (invaderIndices.length === 0 && bossIndex === -1) {
+        spawnBoss();
+    }
 }
 
-// Move invaders every second
-const invaderInterval = setInterval(moveInvaders, 1000);
+// Spawn Boss Enemy
+function spawnBoss() {
+    bossIndex = 112; // Position of the boss
+    cells[bossIndex].classList.add('boss');
+    level += 1;
+    invaderSpeed -= 200; // Increase speed with each level
+    invaderInterval = setInterval(moveInvaders, invaderSpeed); // Update speed
+}
 
 // Shoot Bullets
 document.addEventListener('keydown', (e) => {
@@ -68,11 +86,19 @@ document.addEventListener('keydown', (e) => {
 
             if (cells[bulletIndex].classList.contains('invader')) {
                 cells[bulletIndex].classList.remove('invader'); // Remove invader
-                cells[bulletIndex].classList.remove('bullet'); // Remove bullet
-                invaderIndices.splice(invaderIndices.indexOf(bulletIndex), 1); // Remove invader index
+                invaderIndices = invaderIndices.filter(index => index !== bulletIndex); // Remove invader index
                 updateScore(); // Update score
                 clearInterval(bulletInterval); // Stop bullet
                 checkWin(); // Check for win condition
+                return;
+            }
+
+            if (bulletIndex === bossIndex) {
+                cells[bossIndex].classList.remove('boss'); // Remove boss
+                bossIndex = -1; // Boss is defeated
+                updateScore();
+                clearInterval(bulletInterval);
+                checkWin();
                 return;
             }
 
@@ -95,7 +121,7 @@ function updateScore() {
 
 // Check Win Condition
 function checkWin() {
-    if (invaderIndices.length === 0) {
+    if (invaderIndices.length === 0 && bossIndex === -1) {
         alert('You Win! 🎉');
         clearInterval(invaderInterval); // Stop invader animation
     }
@@ -126,20 +152,8 @@ startTimer();
 function gameOver(message) {
     alert(message);
     clearInterval(timerInterval); // Stop the timer when the game ends
-    // Additional game over logic like resetting the game can go here
 }
 
-// Example of win condition where you can stop the timer:
-function winGame() {
-    alert("You Win!");
-    clearInterval(timerInterval); // Stop the timer when the player wins
-}
-
-// Example of game reset (optional)
-function resetGame() {
-    timeLeft = 20;
-    timeDisplay.textContent = timeLeft;
-    startTimer();
-    // Add reset logic for other game components here
-}
-
+// Start the invader movement and level progression
+invaderInterval = setInterval(moveInvaders, invaderSpeed);
+   
